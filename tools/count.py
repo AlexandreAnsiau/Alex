@@ -22,8 +22,8 @@ def number_words(path, name):
     
     try :
         with open(name, "r", encoding="utf8") as file:
-            line_split_list = [line.split() for line in file] 
-            number_words_in_line = [len(i) for i in line_split_list]
+            lines_words = [line.split() for line in file] 
+            number_words_in_lines = [len(words) for words in lines_words]
             sum_words = sum(number_words_in_line)
             
         return sum_words
