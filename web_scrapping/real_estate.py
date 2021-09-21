@@ -1,3 +1,10 @@
+import re
+
+from bs4 import BeautifulSoup as bs
+import matplotlib.pyplot as plt
+import pandas as pd
+import requests
+
 towns = pd.read_excel("paca.xlsx")
 len_file = len(towns)
 
