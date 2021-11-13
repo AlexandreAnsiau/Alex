@@ -18,6 +18,7 @@ class RandomPolyCreator():
         
     def y_creator(self,):
         import random
+        import numpy as np
         y = self.poly(self.x)
         error_max = self.mode*10**(len(self.poly)-1) if len(self.poly) > 0 else 0 
         print(f"Error max:{error_max}")
@@ -37,24 +38,19 @@ class PolyDetector:
     
     def poly(self,):
         import numpy as np
-        dico = {}
         for poly_degree in range(0, 5):
             a = np.polyfit(self.x, self.y, poly_degree)
             poly = np.poly1d(a)
-            error = sum(abs(-self.y + poly(self.x))**2)
-            #error = sum(((-self.y + poly(self.x)))**2)
-            dico[error] = poly
-        polys = list(dico.items())
-        polys.sort() 
-        print(polys)
-        print(f"{polys[0][1]}")
-        return dico.values()
+            if (len(a) > 2 and a[0] > 1) or len(a) <= 2:
+                print(a)
+                poly_valid = poly           
+        return poly_valid
     
     def graph(self,):
         import matplotlib.pyplot as plt
+        print(self.poly)
         plt.figure()
         plt.plot(self.x, self.y)
-        for num, poly in enumerate(self.poly):
-            plt.plot(self.x, poly(self.x), label=num)
+        plt.plot(self.x, self.poly(self.x), label=len(self.poly))
         plt.legend()
         plt.show()    
