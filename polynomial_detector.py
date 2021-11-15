@@ -5,7 +5,7 @@ class RandomPolyCreator():
     
     def __init__(self, mode="normal"):
         import numpy as np
-        self.mode_dico = {"normal": 1, "difficile": 2}
+        self.mode_dico = {"normal": 1, "difficile": 2, "très difficile": 3}
         self.mode = self.mode_dico[mode] 
         self.x = np.array([i for i in range(-10, 11)])
         self.poly = self.poly()
@@ -38,10 +38,11 @@ class PolyDetector:
     
     def poly(self,):
         import numpy as np
+        dico = {}
         for poly_degree in range(0, 5):
             a = np.polyfit(self.x, self.y, poly_degree)
             poly = np.poly1d(a)
-            if (len(a) > 2 and a[0] > 1) or len(a) <= 2:
+            if (len(a) > 2 and (a[0] > 1 or a[0] < -1)) or len(a) <= 2:
                 print(a)
                 poly_valid = poly           
         return poly_valid
@@ -53,4 +54,6 @@ class PolyDetector:
         plt.plot(self.x, self.y)
         plt.plot(self.x, self.poly(self.x), label=len(self.poly))
         plt.legend()
-        plt.show()    
+        plt.show()
+
+PolyDetector(RandomPolyCreator("très difficile"))    
