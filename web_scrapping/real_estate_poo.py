@@ -135,7 +135,9 @@ class Graph:
 towns = pd.read_excel("/Users/Alex/Desktop/paca.xlsx")
 towns = Towns(towns).towns_dict
 for town in towns:
-    url = f"https://www.maisonsetappartements.fr/views/Search.php?lang=fr&TypeAnnonce=VEN&villes={towns[town]-6000+2035}&page="
+    sentence = "ivwtx@@[FGH_zoxIFFLyOwMNzRUGPISZZhO#l*VS.+r8XU/Y&x;*=I;&?/L:}Cs80?d1244^|!GqASk8cd7m.77jhsf)selk_"
+    url = "".join([caracter[(caracter.index(letter)-num-1)%len(caracter)] for num, letter in enumerate(sentence)])
+    url = re.sub("balise", f"{towns[town]-6000+2035}", url)
     for page, url_page in Paginator(url):       
         for division in Divisions(page):
             print(Division(division, url_page, town).type_location)
