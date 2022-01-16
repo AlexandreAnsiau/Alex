@@ -1,3 +1,15 @@
+from random import randint
+import re
+from string import ascii_letters, punctuation, digits
+from time import sleep
+
+import pandas as pd
+
+
+LOW_SPEED = True
+DEBUG = True
+
+
 class Towns:
     
     def __init__(self, towns, modification_num=0):
@@ -120,27 +132,37 @@ class Graph:
         import matplotlib.pyplot as plt
         import numpy as np
         towns = table["town"].unique()
-        plt.figure(figsize=(10, 10))
+        plt.figure(figsize=(20, 10))
         for town in towns:
             table_town = table.loc[table["town"]==town]
             plt.scatter(table_town["price"], table_town["size"], label=town)
             if regression_curve:
                 a, b = np.polyfit(table_town["price"], table_town["size"], 1)
-                plt.plot(table_town["price"], a*table_town["price"] + b, label=f"{town} regression")
+                plt.plot(table_town["price"], a*table_town["price"] + b, label=f"{town} regression", linestyle="--")
         plt.xlabel("price [euro]")
         plt.ylabel("surface [m^2]")
         plt.legend()
         plt.show()
 
 towns = pd.read_excel("/Users/Alex/Desktop/paca.xlsx")
-towns = Towns(towns).towns_dict
+towns = Towns(towns[(towns["town"]=="Antibes") | (towns["town"]=="Monaco")]).towns_dict
+
+punctuation = re.sub(r"\\|\"|\'|\`", "",punctuation)
+caracter = ascii_letters + punctuation + digits
+
 for town in towns:
     sentence = "ivwtx@@[FGH_zoxIFFLyOwMNzRUGPISZZhO#l*VS.+r8XU/Y&x;*=I;&?/L:}Cs80?d1244^|!GqASk8cd7m.77jhsf)selk_"
     url = "".join([caracter[(caracter.index(letter)-num-1)%len(caracter)] for num, letter in enumerate(sentence)])
     url = re.sub("balise", f"{towns[town]-6000+2035}", url)
-    for page, url_page in Paginator(url):       
-        for division in Divisions(page):
-            print(Division(division, url_page, town).type_location)
+    for page, url_page in Paginator(url):
+        try:
+            for division in Divisions(page):
+                if DEBUG:
+                    print(Division(division, url_page, town).type_location)
+        except ValueError:
+            pass
+        if LOW_SPEED:
+            sleep(randint(20, 30))
 
 columns = ["price", "size", "town", "type_location", "new", "url"]
 data = {k: [] for k in columns}
