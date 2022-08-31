@@ -3,20 +3,27 @@ import re
 from bs4 import BeautifulSoup as bs
 import matplotlib.pyplot as plt
 import pandas as pd
+from string import ascii_letters, digits, punctuation
 import requests
 
 towns = pd.read_excel("paca.xlsx")
 len_file = len(towns)
 
-num = [towns['num'].values[i] - 6000 + 2035 for i in range(len_file)]
+nums = [towns['num'].values[i] - 6000 + 2035 for i in range(len_file)]
+print(type(nums[0]))
 
 names_towns = [towns["town"].values[i] for i in range(len_file)]
-list_urls = [f"https://www.maisonsetappartements.fr/views/Search.php?lang=fr&TypeAnnonce=VEN&villes={num[i]}&page="
-             for i in range(len_file)]
+
+punctuation = re.sub(r"\\|\"|\'|\`", "",punctuation)
+caracter = ascii_letters + punctuation + digits
+sentence = "ivwtx@@[FGH_zoxIFFLyOwMNzRUGPISZZhO#l*VS.+r8XU/Y&x;*=I;&?/L:}Cs80?d1244^|!GqASk8cd7m.77jhsf)selk_"
+url_pattern = "".join([caracter[(caracter.index(letter)-num-1)%len(caracter)] for num, letter in enumerate(sentence)])
+
+urls = [re.sub("balise", str(num), url_pattern) for num in nums]
 
 plt.figure(figsize=(10, 10))
 
-for name_town, url in zip(names_towns, list_urls):
+for name_town, url in zip(names_towns, urls):
     
     prices = []
     sizes = []
@@ -32,10 +39,10 @@ for name_town, url in zip(names_towns, list_urls):
         body = soup.body
         divisions = body.find_all(attrs={"class": "newBlock"})
         informations = [(division.find(attrs={"itemprop": "floorSize"}).get_text(),
-                         division.find(attrs={"class": "RR_prix columns text-left small-12 left"}).get_text()) \
+                         division.find(attrs={"class": "RR_prix"}).get_text()) \
                         for division in divisions \
                         if (division.find(attrs={"itemprop": "floorSize"}) is not None and
-                            division.find(attrs={"class": "RR_prix columns text-left small-12 left"}) is not None)]
+                            division.find(attrs={"class": "RR_prix"}) is not None)]
 
 
         for size, price in informations:
